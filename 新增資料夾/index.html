@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>常夏城 - 御代川 柳</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --gold: #9d814a;
+            --blood: #800;
+            --text: #d9c9c9;
+        }
+
+        body {
+            margin: 0; padding: 0; width: 100%; height: 100vh;
+            background: radial-gradient(circle at 50% 20%, #400000 0%, #1a0000 50%, #000000 100%) no-repeat fixed;
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'Noto Serif TC', serif; overflow: hidden; position: relative;
+        }
+
+        #particle-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+
+        .glass-card {
+            background: rgba(0, 0, 0, 0.5); 
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 60px 40px; width: 90%; max-width: 450px; text-align: center;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8); position: relative; z-index: 1;
+        }
+
+        .castle-name {
+            font-weight: 900; font-size: 4rem; letter-spacing: 1.5rem; padding-left: 1.5rem;
+            color: var(--blood); margin-bottom: 50px; text-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
+        }
+
+        .info-row { margin-bottom: 30px; }
+        .label { font-weight: 200; font-size: 0.75rem; letter-spacing: 0.4rem; color: var(--gold); display: block; margin-bottom: 10px; }
+        .value { font-weight: 200; font-size: 1.8rem; letter-spacing: 0.6rem; color: var(--text); display: block; }
+        .divider { width: 1px; height: 40px; background: var(--gold); margin: 20px auto; opacity: 0.4; }
+
+        /* -----------------------------------------------------------
+           跳轉按鈕樣式 (像 Carrd 那種極簡風)
+           ----------------------------------------------------------- */
+        .enter-button {
+            display: inline-block;
+            margin-top: 40px;
+            padding: 12px 40px;
+            color: var(--gold);
+            text-decoration: none; /* 去掉超連結底線 */
+            border: 1px solid var(--gold);
+            letter-spacing: 5px;
+            font-size: 0.9rem;
+            transition: all 0.4s ease;
+            background: transparent;
+        }
+
+        .enter-button:hover {
+            background: var(--gold);
+            color: #000;
+            box-shadow: 0 0 20px rgba(157, 129, 74, 0.4);
+            transform: translateY(-3px); /* 往上浮一點點 */
+        }
+
+        .torii { color: var(--blood); font-size: 1.5rem; margin-bottom: 20px; opacity: 0.8; }
+    </style>
+</head>
+<body>
+
+    <canvas id="particle-canvas"></canvas>
+
+    <div class="glass-card">
+        <div class="torii">⛩️</div>
+        <h1 class="castle-name">常夏城</h1>
+        
+        <div class="info-section">
+            <div class="info-row"><span class="label">SANIWA</span><span class="value">御代川 柳</span></div>
+            <div class="divider"></div>
+            <div class="info-row"><span class="label">ATTENDANT</span><span class="value">安宅切</span></div>
+        </div>
+
+        <a href="profile.html" class="enter-button">進入本丸</a>
+    </div>
+
+    <script>
+        // --- 粒子特效 (維持原樣) ---
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        let particlesArray = [];
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedY = Math.random() * 0.8; 
+                this.color = `rgba(136, 0, 0, ${Math.random() * 0.3})`;
+                this.angle = Math.random() * Math.PI * 2;
+            }
+            update() {
+                this.y -= this.speedY;
+                this.x += Math.sin(this.angle) * 0.3;
+                this.angle += 0.01;
+                if (this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; }
+            }
+            draw() {
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color; ctx.fill();
+            }
+        }
+        function init() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.width * canvas.height) / 1500;
+            for (let i = 0; i < numberOfParticles; i++) { particlesArray.push(new Particle()); }
+        }
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) { particlesArray[i].update(); particlesArray[i].draw(); }
+            requestAnimationFrame(animate);
+        }
+        window.addEventListener('resize', function () { canvas.width = window.innerWidth; canvas.height = window.innerHeight; init(); });
+        init(); animate();
+    </script>
+</body>
+</html>
