@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>常夏城 - 本丸：歷史卷軸</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink-black: #050505;     
+            --dried-blood: #3d0202;   
+            --velvet-deep: #610a0a;   
+            --gold-wire: rgba(166, 137, 102, 0.4); 
+            --gold-text: #a68966;
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            overflow: hidden;
+            background-color: var(--ink-black);
+            font-family: 'Noto Serif TC', serif;
+        }
+
+        /* -----------------------------------------------------------
+           ✨ 1. 核心背景與金絲垂簾 (維持不變)
+           ----------------------------------------------------------- */
+        .marble-flow {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 15% 25%, var(--dried-blood) 0%, transparent 80%),
+                        radial-gradient(circle at 85% 75%, var(--velvet-deep) 0%, transparent 75%),
+                        radial-gradient(circle at 50% 50%, var(--ink-black) 0%, transparent 60%),
+                        var(--ink-black);
+            background-size: 180% 180%; filter: blur(55px) contrast(1.7); 
+            animation: moveMarble 30s ease-in-out infinite alternate; z-index: 1;
+        }
+        @keyframes moveMarble { 0% { background-position: 0% 0%; transform: scale(1); } 100% { background-position: 100% 100%; transform: scale(1.1); } }
+
+        .decoration-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; display: flex; justify-content: space-around; pointer-events: none; }
+        .gold-wire { width: 1px; height: var(--h); background: linear-gradient(to bottom, transparent, var(--gold-wire)); position: relative; animation: wireSway var(--t) ease-in-out infinite alternate; transform-origin: top center; }
+        .gold-wire::after { content: ''; position: absolute; bottom: -5px; left: -4px; width: 8px; height: 8px; border: 1px solid var(--gold-wire); transform: rotate(45deg); background: var(--ink-black); box-shadow: 0 0 10px var(--gold-wire); }
+        @keyframes wireSway { from { transform: rotate(-0.5deg); } to { transform: rotate(0.5deg); } }
+
+        /* -----------------------------------------------------------
+           ✨ 2. 左側垂直功能標籤 ✨
+           ----------------------------------------------------------- */
+        .side-nav {
+            position: fixed; left: 40px; top: 50%; transform: translateY(-50%);
+            display: flex; flex-direction: column; gap: 50px; z-index: 100;
+        }
+
+        .nav-item {
+            color: var(--gold-text); font-size: 0.9rem; letter-spacing: 5px;
+            writing-mode: vertical-rl; cursor: pointer; opacity: 0.3;
+            transition: all 0.5s ease; position: relative;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            opacity: 1; text-shadow: 0 0 15px var(--gold-text); transform: translateX(5px);
+        }
+
+        /* 標籤前的序號 */
+        .nav-item span { font-size: 0.6rem; margin-bottom: 10px; opacity: 0.5; letter-spacing: 1px; }
+
+        /* -----------------------------------------------------------
+           ✨ 3. 中央內容書籤框 ✨
+           ----------------------------------------------------------- */
+        .content-container {
+            position: absolute; top: 50%; left: 55%; transform: translate(-50%, -50%);
+            width: 300px; height: 60vh;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(166, 137, 102, 0.2);
+            z-index: 50; padding: 40px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            display: none; /* 初始隱藏 */
+            animation: fadeInScroll 1s ease forwards;
+        }
+
+        @keyframes fadeInScroll {
+            from { opacity: 0; transform: translate(-50%, -45%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+
+        .content-title { color: var(--gold-text); font-size: 1.5rem; letter-spacing: 10px; border-bottom: 1px solid var(--gold-wire); padding-bottom: 20px; margin-bottom: 30px; }
+        .content-body { color: #d0d0d0; font-size: 0.85rem; line-height: 2; letter-spacing: 2px; }
+
+        /* -----------------------------------------------------------
+           ✨ 4. 返回資料室按鈕 ✨
+           ----------------------------------------------------------- */
+        .back-btn {
+            position: fixed; bottom: 40px; right: 40px;
+            text-decoration: none; color: var(--gold-text);
+            font-size: 0.8rem; letter-spacing: 6px; opacity: 0.4;
+            transition: all 0.5s; z-index: 100;
+            padding: 10px 20px; border: 1px solid transparent;
+        }
+
+        .back-btn:hover {
+            opacity: 1; letter-spacing: 10px;
+            background: linear-gradient(to right, transparent, rgba(166, 137, 102, 0.1), transparent);
+            text-shadow: 0 0 10px var(--gold-text);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="marble-flow"></div>
+    <div class="decoration-layer">
+        <div class="gold-wire" style="--h: 40vh; --t: 7s;"></div>
+        <div class="gold-wire" style="--h: 70vh; --t: 9s;"></div>
+        <div class="gold-wire" style="--h: 30vh; --t: 6s;"></div>
+        <div class="gold-wire" style="--h: 85vh; --t: 10s;"></div>
+    </div>
+
+    <nav class="side-nav">
+        <div class="nav-item" onclick="showContent('history')"><span>01</span>歷史溯行</div>
+        <div class="nav-item" onclick="showContent('records')"><span>02</span>刀帳</div>
+        <div class="nav-item" onclick="showContent('archive')"><span>03</span>資產倉庫</div>
+    </nav>
+
+    <div id="contentBox" class="content-container">
+        <h2 id="titleText" class="content-title">常夏本丸</h2>
+        <div id="bodyText" class="content-body">
+            請從左側選單選擇欲讀取的歷史檔案...
+        </div>
+    </div>
+
+    <a href="profile.html" class="back-btn">返回資料室</a>
+
+    <script>
+        const data = {
+            history: { title: "歷史溯行", body: "常夏本丸的歷史存檔。這裡紀錄了從慶長年間至今的所有重大時空溯行事件。墨染的痕跡中，藏著未被書寫的真相。放故事的，我還沒做完" },
+            records: { title: "刀帳", body: "顯現之刀，其魂不滅。此處封存了本丸所有刀劍男士的戰鬥經歷與顯現序號。每一把刀，都是一段鮮活的歷史。講刀男的，我還沒做完" },
+            archive: { title: "資產倉庫", body: "本丸資源管理庫。包含玉鋼、冷卻材及各類御守。資源流轉間，常夏城的基石穩固如山。放圖的，我還沒做完。" }
+        };
+
+        function showContent(key) {
+            const box = document.getElementById('contentBox');
+            const title = document.getElementById('titleText');
+            const body = document.getElementById('bodyText');
+
+            // 重新觸發動畫
+            box.style.display = 'none';
+            setTimeout(() => {
+                title.innerText = data[key].title;
+                body.innerText = data[key].body;
+                box.style.display = 'block';
+            }, 10);
+
+            // 處理標籤啟動狀態
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+    </script>
+</body>
+</html>

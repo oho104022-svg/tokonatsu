@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>常夏城 - 審神者檔案 Repository</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --glass-bg: rgba(10, 10, 10, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --gold-muted: #a68966;  
+            --vermilion-soft: #8a1515;
+            --text-soft: #d0d0d0;
+        }
+
+        /* 允許頁面垂直捲動 */
+        body {
+            margin: 0; padding: 0; width: 100%; min-height: 100vh;
+            background: url('flower.jpg') center/cover no-repeat fixed;
+            font-family: 'Noto Serif TC', serif;
+            display: flex; flex-direction: column; align-items: center;
+            overflow-x: hidden; 
+            overflow-y: auto; 
+            position: relative;
+        }
+
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%);
+            z-index: -1;
+        }
+
+        /* ✨ 新增：下雨 Canvas 樣式 */
+        #rainCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1; /* 放在背景之上，卡片之下 */
+            pointer-events: none;
+            opacity: 0.5; /* 輕微的半透明感 */
+        }
+
+        /* 小卡主體 */
+        .glass-frame {
+            width: 90%; max-width: 380px;
+            margin: 120px 0; 
+            position: relative; z-index: 10; /* 確保在雨水之上 */
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+        }
+
+        .header-section {
+            padding: 80px 20px 60px; 
+            text-align: center;
+            border-bottom: 1px solid var(--glass-border);
+            position: relative;
+        }
+
+        /* 頭貼圓框 */
+        .avatar-circle {
+            position: absolute; top: -70px; left: 50%;
+            transform: translateX(-50%);
+            width: 140px; height: 140px;
+            border-radius: 50%;
+            background: #000;
+            background-image: url('saniwa_avatar.jpg');
+            background-size: cover; background-position: center;
+            border: 2px solid var(--gold-muted);
+            box-shadow: 0 0 30px rgba(166, 137, 102, 0.4);
+            animation: avatarPulse 5s ease-in-out infinite;
+            z-index: 15;
+        }
+
+        @keyframes avatarPulse {
+            0%, 100% { box-shadow: 0 0 30px rgba(166, 137, 102, 0.3); }
+            50% { box-shadow: 0 0 50px rgba(166, 137, 102, 0.6); }
+        }
+
+        .system-id { font-size: 0.6rem; letter-spacing: 5px; opacity: 0.2; color: #fff; margin-bottom: 15px; margin-top: 50px; }
+        
+        .main-name {
+            font-weight: 900; font-size: 2.4rem; letter-spacing: 1.1rem;
+            margin: 0; padding-left: 1.1rem;
+            background: linear-gradient(to bottom, #fff, var(--gold-muted));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+        }
+
+        .genji-code {
+            font-size: 0.8rem; letter-spacing: 0.6rem; color: var(--gold-muted);
+            margin-top: 25px; font-weight: 200; display: block; opacity: 0.8;
+        }
+
+        /* 摺疊區 */
+        .accordion { width: 100%; }
+        .acc-item { border-bottom: 1px solid var(--glass-border); }
+        .acc-header {
+            width: 100%; padding: 25px 20px; background: transparent; border: none;
+            color: var(--text-soft); font-family: 'Noto Serif TC', serif;
+            font-size: 1rem; text-align: left; cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .acc-header .icon { font-size: 0.8rem; opacity: 0.3; transition: transform 0.4s; }
+        
+        .acc-content { 
+            max-height: 0; 
+            overflow: hidden; 
+            transition: max-height 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        
+        .acc-item.active .acc-content { 
+            max-height: 2000px; 
+        }
+        
+        .acc-item.active .acc-header .icon { 
+            transform: rotate(45deg); color: var(--gold-muted); opacity: 1; 
+        }
+
+        .detail-body {
+            padding: 25px; 
+            color: var(--text-soft); 
+            font-size: 0.85rem; 
+            line-height: 2.2; 
+            letter-spacing: 2px; 
+            text-align: justify; 
+            border-top: 1px solid rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.02);
+        }
+
+        .close-btn {
+            display: block; text-align: center; padding: 35px 0;
+            text-decoration: none; color: var(--text-soft);
+            font-size: 0.8rem; letter-spacing: 8px; opacity: 0.4;
+            transition: all 0.5s; position: relative;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.02), transparent);
+        }
+
+        .close-btn:hover {
+            opacity: 1; letter-spacing: 12px; color: var(--gold-muted);
+            background: linear-gradient(to right, transparent, rgba(166, 137, 102, 0.1), transparent);
+            text-shadow: 0 0 10px rgba(166, 137, 102, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="rainCanvas"></canvas>
+
+    <div class="glass-frame">
+        <div class="header-section">
+            <div class="avatar-circle"></div>
+            <div class="system-id">REPOSITORY | TOKONATSU</div>
+            <h1 class="main-name">御代川 柳</h1>
+            <span class="genji-code">壹零零捌．零貳陸</span>
+        </div>
+
+        <div class="accordion">
+            <div class="acc-item">
+                <button class="acc-header">性格 <span class="icon">＋</span></button>
+                <div class="acc-content">
+                    <div class="detail-body">
+                        寬容｜優雅｜自傲<br><br>
+                        他在本丸裡像隻盤據在高處的黑豹，大部分時間都收起爪子、瞇著眼，散發出一種近乎溺愛的慵懶。他的靈力領域像是一張無形的網，靜靜地覆蓋住整座常夏城，這份絕對的實力讓他有本錢放任刀男們自由生長。無論是被當成主君敬畏，還是被當成晚輩親近，他都無所謂地和顏悅色——源於一種極度自信的傲慢。<br><br>
+                        但在私底下，他那種屬於「貓」的惡劣與支配欲才會真正顯露。<br><br>
+                        他並不迷信那種溫情脈脈的「愛」，與其去期待一把剛學會做人的刀弄懂什麼是感情，他更傾向於利用絕對服從來構築關係。御代川享受著安宅切那種明知被玩弄卻無法違抗的清醒。用最溫柔的表情下達最殘酷的命令，在對方的服從裡，冷靜地觀測著那顆千年的靈魂究竟何時會被他逼出真正的愛或恨。
+                    </div>
+                </div>
+            </div>
+
+            <div class="acc-item">
+                <button class="acc-header">身世 <span class="icon">＋</span></button>
+                <div class="acc-content">
+                    <div class="detail-body">
+                        其人。中納言之女。生而聰穎，飽讀詩書，才情橫溢於簾幕之外，卻引家族深懼。族人視其為器，擬於新婚之夜納為權柄。<br><br>
+                        其夜。雪大如席。御代川著白無垢，端坐於紅燭之下。當眾人以為其已俯首，卻於交杯之時，手起刀落。先斬夫婿，後誅至親，舉手投足平靜如祭祀，殺戮之姿淡漠如神明。<br>鮮血潑濺於雪，紅白交錯，如紅梅綻於寒冬。不悲不泣，既無瘋魔亦無悔色，唯有燃盡一切之狠戾。<br><br>
+                        其咒。死者於絕命之際，爆發陰鷙執念。那聲「留」，化作無數慘白枯手，自血泊中攀上其腳踝，欲將這尊高傲的神明拖入黃泉。<br>御代川未曾回頭，亦不掙扎，僅是拖著那滿地的死者執念走入永恆。自此，其軀不老，其魂不死，遊走於時間罅隙的長生者。
+                    </div>
+                </div>
+            </div>
+
+            <div class="acc-item">
+                <button class="acc-header">外貌 <span class="icon">＋</span></button>
+                <div class="acc-content">
+                    <div class="detail-body">
+                        黑髮，披散如深夜之錦緞，卻又在髮尾生出如紅梅血色。黃眼，冷冽如冬日之陽，映照千萬兩迭起又破敗。常年衣襟鬆垮，層疊絲線間酒杯傾覆，混入批奏硃砂裡，又似乎點成嘴角那美人痣。側臥於軟榻，指尖殘留翻閱古籍的墨香，另一手卻已按在冰冷的刀柄之上。那硃砂色澤豔麗，襯著他如雪瓷般的膚色，竟分不清是公文上的批註，還是當年新婚濺上的、洗不淨的陳年殘血。<br><br>
+                        那雙足以翻雲覆雨、斷人生死的手，此刻正漫不經心地撥弄著散亂的髮梢，任由那抹梅色在指間纏繞。<br><br>他吐出一口帶著酒氣的冷香，混合菸草之沉悶飄散於天守閣。
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <a href="profile.html" class="close-btn">返回資料室</a>
+    </div>
+
+    <script>
+        // --- 粒子雨腳本 ---
+        const canvas = document.getElementById('rainCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, particles = [];
+
+        function init() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            particles = [];
+            for (let i = 0; i < 45; i++) { // 45 條雨絲，密度適中
+                particles.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    l: Math.random() * 25 + 10, // 長度
+                    s: Math.random() * 1.5 + 0.5, // 速度（慢速優雅）
+                    a: 0.1 // 微斜角度
+                });
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.strokeStyle = 'rgba(166, 137, 102, 0.4)'; // 古銅金雨絲
+            ctx.lineWidth = 1;
+            ctx.lineCap = 'round';
+            
+            particles.forEach(p => {
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(p.x + p.a * 10, p.y + p.l);
+                ctx.stroke();
+                
+                p.y += p.s;
+                p.x += p.a;
+                
+                if (p.y > height) {
+                    p.y = -p.l;
+                    p.x = Math.random() * width;
+                }
+            });
+            requestAnimationFrame(draw);
+        }
+
+        window.addEventListener('resize', init);
+        init();
+        draw();
+
+        // --- 摺疊邏輯 ---
+        document.querySelectorAll('.acc-header').forEach(header => {
+            header.addEventListener('click', () => {
+                header.parentElement.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>
