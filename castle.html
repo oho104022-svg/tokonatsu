@@ -22,9 +22,7 @@
             font-family: 'Noto Serif TC', serif;
         }
 
-        /* -----------------------------------------------------------
-           ✨ 1. 核心背景與金絲垂簾 (維持不變)
-           ----------------------------------------------------------- */
+        /* 核心背景 */
         .marble-flow {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at 15% 25%, var(--dried-blood) 0%, transparent 80%),
@@ -41,9 +39,7 @@
         .gold-wire::after { content: ''; position: absolute; bottom: -5px; left: -4px; width: 8px; height: 8px; border: 1px solid var(--gold-wire); transform: rotate(45deg); background: var(--ink-black); box-shadow: 0 0 10px var(--gold-wire); }
         @keyframes wireSway { from { transform: rotate(-0.5deg); } to { transform: rotate(0.5deg); } }
 
-        /* -----------------------------------------------------------
-           ✨ 2. 左側垂直功能標籤 ✨
-           ----------------------------------------------------------- */
+        /* 左側導航 */
         .side-nav {
             position: fixed; left: 40px; top: 50%; transform: translateY(-50%);
             display: flex; flex-direction: column; gap: 50px; z-index: 100;
@@ -59,12 +55,9 @@
             opacity: 1; text-shadow: 0 0 15px var(--gold-text); transform: translateX(5px);
         }
 
-        /* 標籤前的序號 */
         .nav-item span { font-size: 0.6rem; margin-bottom: 10px; opacity: 0.5; letter-spacing: 1px; }
 
-        /* -----------------------------------------------------------
-           ✨ 3. 中央內容書籤框 ✨
-           ----------------------------------------------------------- */
+        /* 中央內容書籤框 */
         .content-container {
             position: absolute; top: 50%; left: 55%; transform: translate(-50%, -50%);
             width: 300px; height: 60vh;
@@ -73,7 +66,7 @@
             border: 1px solid rgba(166, 137, 102, 0.2);
             z-index: 50; padding: 40px;
             box-shadow: 0 0 40px rgba(0,0,0,0.8);
-            display: none; /* 初始隱藏 */
+            display: none; 
             animation: fadeInScroll 1s ease forwards;
         }
 
@@ -83,11 +76,28 @@
         }
 
         .content-title { color: var(--gold-text); font-size: 1.5rem; letter-spacing: 10px; border-bottom: 1px solid var(--gold-wire); padding-bottom: 20px; margin-bottom: 30px; }
-        .content-body { color: #d0d0d0; font-size: 0.85rem; line-height: 2; letter-spacing: 2px; }
+        .content-body { color: #d0d0d0; font-size: 0.85rem; line-height: 2.2; letter-spacing: 2px; }
 
-        /* -----------------------------------------------------------
-           ✨ 4. 返回資料室按鈕 ✨
-           ----------------------------------------------------------- */
+        /* ✨ 連結專屬樣式 ✨ */
+        .file-link {
+            display: block;
+            margin-top: 20px;
+            color: var(--gold-text);
+            text-decoration: none;
+            border: 1px solid var(--gold-wire);
+            padding: 15px;
+            text-align: center;
+            transition: all 0.4s;
+            background: rgba(166, 137, 102, 0.05);
+        }
+
+        .file-link:hover {
+            background: rgba(166, 137, 102, 0.15);
+            box-shadow: 0 0 15px rgba(166, 137, 102, 0.3);
+            letter-spacing: 4px;
+        }
+
+        /* 返回按鈕 */
         .back-btn {
             position: fixed; bottom: 40px; right: 40px;
             text-decoration: none; color: var(--gold-text);
@@ -130,10 +140,20 @@
     <a href="profile.html" class="back-btn">返回資料室</a>
 
     <script>
+        // ✨ 在這裡設定妳要跳轉的網址
         const data = {
-            history: { title: "歷史溯行", body: "常夏本丸的歷史存檔。這裡紀錄了從慶長年間至今的所有重大時空溯行事件。墨染的痕跡中，藏著未被書寫的真相。放故事的，我還沒做完" },
-            records: { title: "刀帳", body: "顯現之刀，其魂不滅。此處封存了本丸所有刀劍男士的戰鬥經歷與顯現序號。每一把刀，都是一段鮮活的歷史。講刀男的，我還沒做完" },
-            archive: { title: "資產倉庫", body: "本丸資源管理庫。包含玉鋼、冷卻材及各類御守。資源流轉間，常夏城的基石穩固如山。放圖的，我還沒做完。" }
+            history: { 
+                title: "歷史溯行", 
+                body: "安宅切、安宅切，想必你仍然不清楚你的審神者之罪過吧，他有罪，無知的孽緣，你要如何去判斷他前世的種子不會於阿津賀志山發芽成今生的碩果，在歷史的戰場化成鮮血般濃稠的淚呢。<br><br><a href='https://saber-walrus-ff7.notion.site/333ddcb0d90d800b8239e8805b738477?source=copy_link' class='file-link' target='_blank'>三界無安，猶如火宅</a>" 
+            },
+            records: { 
+                title: "刀帳", 
+                body: "顯現之刀，其魂不滅。此處封存了本丸所有刀劍男士的戰鬥經歷與顯現序號。放刀男的我還沒做完不要點。<br><br><a href='records.html' class='file-link'>不要點</a>" 
+            },
+            archive: { 
+                title: "資產倉庫", 
+                body: "本丸資源管理庫。放圖的我還沒做完不要點。<br><br><a href='gallery.html' class='file-link'>不要點</a>" 
+            }
         };
 
         function showContent(key) {
@@ -141,17 +161,16 @@
             const title = document.getElementById('titleText');
             const body = document.getElementById('bodyText');
 
-            // 重新觸發動畫
             box.style.display = 'none';
             setTimeout(() => {
                 title.innerText = data[key].title;
-                body.innerText = data[key].body;
+                // ✨ 重點：這裡要改用 innerHTML 才能顯示連結
+                body.innerHTML = data[key].body;
                 box.style.display = 'block';
             }, 10);
 
-            // 處理標籤啟動狀態
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            if (event) event.currentTarget.classList.add('active');
         }
     </script>
 </body>
